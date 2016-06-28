@@ -3,6 +3,8 @@ package com.conDB;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 import com.alibaba.common.lang.StringUtil;
 import com.conDB.entry.TableForm;
 import com.conDB.entry.Variable;
@@ -65,9 +67,15 @@ public class GenerateConfig {
 		StringBuffer bfNormal=new StringBuffer();
 		StringBuffer bfKey=new StringBuffer();
 		StringBuffer bfResult=new StringBuffer();
-		
+		int i=0;
 		for(Variable v:table.getColumnList()){
-			bfResult.append("\t").append("\t").append("@Result(property=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append("\\\",column=\\\"").append(v.getColumnName()).append("\\\")").append("\r\n\r\n");
+			i++;
+			bfResult.append("\t").append("\t").append("@Result(property=\"").append(StringUntilMy.changeabA(v.getColumnName())).append("\",column=\"").append(v.getColumnName()).append("\")");
+			if(i==table.getColumnList().size()){
+				bfResult.append("\r\n\r\n");
+			}else{
+				bfResult.append(",").append("\r\n\r\n");
+			}
 			if(StringUtil.isBlank(v.getColumnKey())){
 				bfNormal.append("\t").append("\t").append("+\"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\">and ");
 				bfNormal.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"").append("\r\n\r\n");
@@ -99,7 +107,7 @@ public class GenerateConfig {
 		sb.append("\r\n\r\n");
 		for(Variable v:normalVar){
 			sb.append("\t\t\t");
-			sb.append("+ \\\"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\"> ")
+			sb.append("+ \"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\"> ")
 				.append(v.getColumnName()).append(" = #{")
 				.append(StringUntilMy.changeabA(v.getColumnName())).append("} ,</if>\"");
 			sb.append("\r\n\r\n");
@@ -129,6 +137,31 @@ public class GenerateConfig {
 	}
 
 	public void generateInsertEnteyMetnod(){
+		sb.append("\r\n\r\n");
+		sb.append("\t").append("@Insert(\"insert into ").append(table.getSelectedTableNames()).append(" (");
+		int i=0;
+		StringBuffer varInput=new StringBuffer();
+		for(Variable v:table.getColumnList()){
+			i++;
+			sb.append(v.getColumnName());
+			varInput.append("#{").append(StringUntilMy.changeabA(v.getColumnName())).append("}");
+			if(i<table.getColumnList().size()){
+				sb.append(" , ");
+				varInput.append(" , ");
+			}
+			
+		}
+		sb.append(") \"").append("\r\n\r\n").append("\t\t\t\t");
+		sb.append("+\"values( ");
+		sb.append(varInput).append(" )\"");
+		sb.append("\r\n\r\n").append("\t");
+		sb.append("int save").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append(" (").append(StringUntilMy.changeAaA(table.getSelectedTableNames()));
+		sb.append(" ").append(StringUntilMy.changeabA(table.getSelectedTableNames()));
+		sb.append(")");
+		sb.append("\r\n\r\n");
+	}
+	
+	public void generateDeleteMethod(){
 		
 	}
 	public void generateEnd(){
