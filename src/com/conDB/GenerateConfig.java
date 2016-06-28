@@ -44,16 +44,20 @@ public class GenerateConfig {
 		generateQueryListMethod();//查询符合条件的list
 		generateUdateIntoMethod();//更新entry
 		generateInsertEnteyMetnod();//动态插入
+		generateDeleteMethod();
 		generateEnd();
 	}
 	
 	public void generateHead(){
 		sb.append("package ").append(table.getDaoPackage()).append(";\r\n\r\n");
 		sb.append("import java.util.List;").append("\r\n\r\n");
-		sb.append("import org.apache.ibatis.annotations.Result;").append("\r\n\r\n");
-		sb.append("import org.apache.ibatis.annotations.Results;").append("\r\n\r\n");
-		sb.append("import org.apache.ibatis.annotations.Select;").append("\r\n\r\n");
-		sb.append("import org.springframework.stereotype.Repository;").append("\r\n\r\n");
+		sb.append("import org.apache.ibatis.annotations.Insert;").append("\r\n");
+		sb.append("import org.apache.ibatis.annotations.Update;").append("\r\n");
+		sb.append("import org.apache.ibatis.annotations.Delete;").append("\r\n");
+		sb.append("import org.apache.ibatis.annotations.Result;").append("\r\n");
+		sb.append("import org.apache.ibatis.annotations.Results;").append("\r\n");
+		sb.append("import org.apache.ibatis.annotations.Select;").append("\r\n");
+		sb.append("import org.springframework.stereotype.Repository;").append("\r\n");
 		sb.append("import ").append(table.getEntityPackage()).append(".").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append("\r\n\r\n");
 		sb.append("\r\n\r\n");
 		sb.append("@Repository(\"").append(table.getSelectedTableNames()).append("_dao\")");
@@ -62,7 +66,7 @@ public class GenerateConfig {
 	}
 	
 	public void generateQueryListMethod(){
-		sb.append("\t").append("@Select(\"<script>select * from ").append(table.getSelectedTableNames()).append(" where 1=1 \"").append("\r\n\r\n");
+		sb.append("\t").append("@Select(\"<script>select * from ").append(table.getSelectedTableNames()).append(" where 1=1 \"").append("\r\n");
 		
 		StringBuffer bfNormal=new StringBuffer();
 		StringBuffer bfKey=new StringBuffer();
@@ -72,59 +76,58 @@ public class GenerateConfig {
 			i++;
 			bfResult.append("\t").append("\t").append("@Result(property=\"").append(StringUntilMy.changeabA(v.getColumnName())).append("\",column=\"").append(v.getColumnName()).append("\")");
 			if(i==table.getColumnList().size()){
-				bfResult.append("\r\n\r\n");
+				bfResult.append("\r\n");
 			}else{
-				bfResult.append(",").append("\r\n\r\n");
+				bfResult.append(",").append("\r\n");
 			}
 			if(StringUtil.isBlank(v.getColumnKey())){
 				bfNormal.append("\t").append("\t").append("+\"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\">and ");
-				bfNormal.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"").append("\r\n\r\n");
+				bfNormal.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"").append("\r\n");
 				normalVar.add(v);
 			}else{
 				keyVar.add(v);
 				bfKey.append("\t").append("\t").append("+\"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\">and ");
-				bfKey.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"").append("\r\n\r\n");
+				bfKey.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"").append("\r\n");
 			}
 		}
-		sb.append(bfKey).append(bfNormal).append("\t").append("</script>\")").append("\r\n\r\n");
+		sb.append(bfKey).append(bfNormal).append("\t").append("+\"</script>\")").append("\r\n\r\n");
 		
 		
-		sb.append("\t").append("@Results({").append("\r\n\r\n");
+		sb.append("\t").append("@Results({").append("\r\n");
 		sb.append(bfResult).append("\t").append("})").append("\r\n\r\n");
 		
 		
 		sb.append("\t").append("List<").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append("> query");
 		sb.append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append("List(").append(StringUntilMy.changeAaA(table.getSelectedTableNames()));
 		sb.append(" ").append(StringUntilMy.changeabA(table.getSelectedTableNames())).append(");");
-		sb.append("\r\n\r\n").append("\r\n\r\n");
+		sb.append("\r\n\r\n");
 	}
 	
 	public void generateUdateIntoMethod(){
-		sb.append("\r\n\r\n");
 		sb.append("\t").append("@Update(\"<script>update ").append(table.getSelectedTableNames()).append(" \"");
-		sb.append("\r\n\r\n");
+		sb.append("\r\n");
 		sb.append("\t\t").append("+\"<set>\"");
-		sb.append("\r\n\r\n");
+		sb.append("\r\n");
 		for(Variable v:normalVar){
 			sb.append("\t\t\t");
 			sb.append("+ \"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName())).append(" !=null \\\"> ")
 				.append(v.getColumnName()).append(" = #{")
 				.append(StringUntilMy.changeabA(v.getColumnName())).append("} ,</if>\"");
-			sb.append("\r\n\r\n");
+			sb.append("\r\n");
 		}
 		sb.append("\t\t");
 		sb.append("+\"</set>\"");
-		sb.append("\r\n\r\n");
+		sb.append("\r\n");
 		sb.append("\t\t");
 		sb.append("+\"where 1=1 ");
 		sb.append("\"");
-		sb.append("\r\n\r\n");
+		sb.append("\r\n");
 		for(Variable v:keyVar){
 			sb.append("\t\t");
 			sb.append("+ \"<if test=\\\"").append(StringUntilMy.changeabA(v.getColumnName()))
 				.append(" !=null \\\"> and ").append(v.getColumnName()).append(" = #{")
 				.append(StringUntilMy.changeabA(v.getColumnName())).append("} </if>\"");
-			sb.append("\r\n\r\n");
+			sb.append("\r\n");
 		}
 		sb.append("\t");
 		sb.append("+ \"</script>\")");
@@ -133,7 +136,6 @@ public class GenerateConfig {
 		sb.append("int update").append(StringUntilMy.changeAaA(table.getSelectedTableNames()))
 			.append("(").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append(" ")
 			.append(StringUntilMy.changeabA(table.getSelectedTableNames())).append(");");
-		sb.append("\r\n\r\n");
 	}
 
 	public void generateInsertEnteyMetnod(){
@@ -151,18 +153,36 @@ public class GenerateConfig {
 			}
 			
 		}
-		sb.append(") \"").append("\r\n\r\n").append("\t\t\t\t");
+		sb.append(") \"").append("\r\n").append("\t\t\t\t");
 		sb.append("+\"values( ");
-		sb.append(varInput).append(" )\"");
-		sb.append("\r\n\r\n").append("\t");
+		sb.append(varInput).append(" )\")");
+		sb.append("\r\n").append("\t");
 		sb.append("int save").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append(" (").append(StringUntilMy.changeAaA(table.getSelectedTableNames()));
 		sb.append(" ").append(StringUntilMy.changeabA(table.getSelectedTableNames()));
-		sb.append(")");
+		sb.append(");");
 		sb.append("\r\n\r\n");
 	}
 	
 	public void generateDeleteMethod(){
-		
+		sb.append("\t");
+		sb.append("@Delete(\"delete from ").append(table.getSelectedTableNames());
+		sb.append(" where ");
+		int i=0;
+		for(Variable v:keyVar){
+			i++;
+			sb.append(v.getColumnName()).append(" = #{").append(StringUntilMy.changeabA(v.getColumnName()));
+			if(i<keyVar.size()){
+				sb.append("} and ");
+			}else{
+				sb.append("}");
+			}
+		}
+		sb.append("\")");
+		sb.append("\r\n").append("\t");
+		sb.append("int delete").append(StringUntilMy.changeabA(table.getSelectedTableNames()));
+		sb.append("(").append(StringUntilMy.changeAaA(table.getSelectedTableNames())).append(" ");
+		sb.append(StringUntilMy.changeabA(table.getSelectedTableNames())).append(");");
+		sb.append("\r\n\r\n");
 	}
 	public void generateEnd(){
 		sb.append("}");
